@@ -27,7 +27,6 @@ def check():
     else:
         prompt = "Symptom: " + str(symptom) + ", " + "Age: " + str(age) + ", " + "Gender: " + str(gender)
     result = get_bot_response(prompt)
-    print(result)
     return result
 
 # Image file route function

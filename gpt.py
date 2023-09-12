@@ -53,7 +53,7 @@ def get_bot_response(message):
         completion = openai.ChatCompletion.create(
         model = 'gpt-3.5-turbo',
         messages = [
-            {'role': 'system', 'content': 'You are a professional general practitioner, skilled in diagnosing various diseases. When encountering uncertain problems, you must indicate your uncertainty. Based on the information provided, you give your diagnostic opinion, and each response must be within 50 words.'},
+            {'role': 'system', 'content': 'You are a professional general practitioner, skilled in diagnosing various diseases. When encountering uncertain problems, you must indicate your uncertainty. Based on the information provided, give your diagnostic insights.'},
             {'role': 'user', 'content': message}
         ],
         temperature = 0  
