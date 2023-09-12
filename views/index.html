@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AI medical-assisted diagnosis</title>
+  <!-- Import Bootstrap style file -->
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.0/css/bootstrap.min.css">
+  <style>
+    /* Custom style */
+    body {
+      padding-top: 5rem;
+    }
+    .form-label {
+      font-weight: bold;
+    }
+    .form-control:focus {
+      border-color: #8bc34a;
+      box-shadow: 0 0 0 0.2rem rgba(139, 195, 74, 0.25);
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">AI medical-assisted diagnosis</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <form id="symptom-form" class="mt-5">
+          <div class="mb-3">
+            <label for="symptom-input" class="form-label">Symptom(details like location, duration, intensity, and any associated symptoms can help the precision of diagnose):</label>
+            <input type="text" id="symptom-input" name="symptom" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="age-select" class="form-label">Age Range:</label>
+            <select id="age-select" name="age" class="form-select" required>
+              <option value="">Please select</option>
+              <option value="0-18">0-18 years old</option>
+              <option value="19-40">19-40 years old</option>
+              <option value="41-60">41-60 years old</option>
+              <option value="60+">Over 60 years old</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Gender:</label>
+            <div class="form-check">
+              <input type="radio" id="male-radio" name="gender" value="male" class="form-check-input">
+              <label for="male-radio" class="form-check-label">Male</label>
+            </div>
+            <div class="form-check">
+              <input type="radio" id="female-radio" name="gender" value="female" class="form-check-input">
+              <label for="female-radio" class="form-check-label">Female</label>
+            </div>         
+          </div>
+          <div class="mb-3">
+            <label for="report-input" class="form-label">Upload check report:</label>
+            <input type="file" id="report-input" name="report" class="form-control" accept="image/*">
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+        <div id="result" class="mt-5"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Bootstrap JavaScript file -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.1.0/js/bootstrap.min.js"></script>
+  <script>
+    // JavaScript code
+    const form = document.getElementById('symptom-form');
+    const resultDiv = document.getElementById('result');
+
+    // Validate file type is image
+    function validateFileType(file) {
+      const fileType = file.type;
+      const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      return validImageTypes.includes(fileType);
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const fileInput = document.getElementById('report-input');
+      if (fileInput.files.length > 0 && !validateFileType(fileInput.files[0])) {
+        alert('The uploaded file must be an image!');
+        return;
+      }
+
+      const formData = new FormData(form);
+
+      resultDiv.innerHTML = 'Submitted, analyzing...';
+
+      try {
+        const response = await fetch('/api/symptom-check', {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.text();
+        resultDiv.innerHTML = `Check result: ${result}`;
+      } catch (error) {
+        console.error(error);
+        resultDiv.innerHTML = 'Error analyzing, please try again!';
+      }
+    });
+  </script>
+</body>
+</html>
