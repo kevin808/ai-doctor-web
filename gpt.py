@@ -1,11 +1,11 @@
 import os
 import openai
 
-# openai.api_type = "azure"
-# openai.api_base = os.getenv("AZURE_OPENAI_API_HOST")
-# openai.api_version = "2023-03-15-preview"
-# openai.api_key = os.getenv("AZURE_OPENAI_API_KEY")
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_type = "azure"
+openai.api_base = os.getenv("AZURE_OPENAI_API_HOST")
+openai.api_version = "2023-03-15-preview"
+openai.api_key = os.getenv("AZURE_OPENAI_API_KEY")
+# openai.api_key = os.getenv("OPENAI_API_KEY")
 from urllib import parse
 import requests, json
 
@@ -47,40 +47,44 @@ def simplify_info(info):
         result_dict[key] = value
     return str(result_dict)
 
-def get_bot_response(message):
-    response_text = 'No result'
-    try:
-        completion = openai.ChatCompletion.create(
-        model = 'gpt-3.5-turbo',
-        messages = [
-            {'role': 'system', 'content': 'You are a professional general practitioner, skilled in diagnosing various diseases. When encountering uncertain problems, you must indicate your uncertainty. Based on the information provided, give your diagnostic insights.'},
-            {'role': 'user', 'content': message}
-        ],
-        temperature = 0  
-        )
-        response_text = completion['choices'][0]['message']['content']
-
-    except Exception as e:
-        response_text = str(e)
-
-    return response_text
-
-# For Azure
+# Using OpenAI
 # def get_bot_response(message):
-# #Note: The openai-python library support for Azure OpenAI is in preview.
 #     response_text = 'No result'
 #     try:
-#         response = openai.ChatCompletion.create(
-#             engine="gpt-35-turbo",
-#             messages = message,
-#             temperature=1.0,
-#             max_tokens=100,
-#             top_p=0.95,
-#             frequency_penalty=0,
-#             presence_penalty=0,
-#             stop=None)
-#         response_text = response['choices'][0]['message']['content']
+#         completion = openai.ChatCompletion.create(
+#         model = 'gpt-3.5-turbo',
+#         messages = [
+#             {'role': 'system', 'content': 'You are a professional general practitioner, skilled in diagnosing various diseases. When encountering uncertain problems, you must indicate your uncertainty. Based on the information provided, give your diagnostic insights.'},
+#             {'role': 'user', 'content': message}
+#         ],
+#         temperature = 0
+#         )
+#         response_text = completion['choices'][0]['message']['content']
+
 #     except Exception as e:
 #         response_text = str(e)
-#     # Return the formatted response text
+
 #     return response_text
+
+# Using Azure OpenAI
+def get_bot_response(message):
+#Note: The openai-python library support for Azure OpenAI is in preview.
+    response_text = 'No result'
+    try:
+        response = openai.ChatCompletion.create(
+            engine="gpt-35-turbo",
+            messages = [
+                {'role': 'system', 'content': 'You are a professional general practitioner, skilled in diagnosing various diseases. When encountering uncertain problems, you must indicate your uncertainty. Based on the information provided, give your diagnostic insights. Limited to 100 words'},
+                {'role': 'user', 'content': message}
+            ],
+            temperature=0.1,
+            max_tokens=1000,
+            top_p=0.99,
+            frequency_penalty=0,
+            presence_penalty=0,
+            stop=None)
+        response_text = response['choices'][0]['message']['content']
+    except Exception as e:
+        response_text = str(e)
+    # Return the formatted response text
+    return response_text
